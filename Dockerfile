@@ -1,31 +1,28 @@
 # Use Maven + JDK to build
-FROM maven:3.9.4-eclipse-temurin-22 AS build
+FROM maven:3.9.4-eclipse-temurin-22-jdk AS build
 
-# Set working directory
 WORKDIR /app
 
-# Copy pom.xml first (for dependency caching)
+# Copy pom.xml first for caching dependencies
 COPY pom.xml .
 
 # Download dependencies
 RUN mvn dependency:go-offline -B
 
-# Copy the rest of the source code
+# Copy source code
 COPY src ./src
 
 # Build the project
 RUN mvn clean package -DskipTests
 
-# Use JDK runtime for running the app
+# Runtime image
 FROM eclipse-temurin:22-jdk
 
 WORKDIR /app
 
-# Copy the jar from the build stage
+# Copy built jar
 COPY --from=build /app/target/*.jar app.jar
 
-# Expose default Spring Boot port
 EXPOSE 8080
 
-# Run the Spring Boot app
 ENTRYPOINT ["java","-jar","app.jar"]

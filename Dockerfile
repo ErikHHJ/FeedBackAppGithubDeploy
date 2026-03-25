@@ -1,9 +1,9 @@
-# Use Maven + JDK to build
-FROM maven:3.9.4-eclipse-temurin-22-jdk AS build
+# Use Maven + JDK 17 to build
+FROM maven:3.9.4-eclipse-temurin-17 AS build
 
 WORKDIR /app
 
-# Copy pom.xml first for caching dependencies
+# Copy pom.xml first for dependency caching
 COPY pom.xml .
 
 # Download dependencies
@@ -15,8 +15,8 @@ COPY src ./src
 # Build the project
 RUN mvn clean package -DskipTests
 
-# Runtime image
-FROM eclipse-temurin:22-jdk
+# Runtime image (JDK 17)
+FROM eclipse-temurin:17-jdk
 
 WORKDIR /app
 
